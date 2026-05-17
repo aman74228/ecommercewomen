@@ -937,7 +937,7 @@
 
     <div class="hero-image">
       <div class="hero-img-frame">
-        <div class="hero-img-inner">❋</div>
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600" alt="Stylish woman in elegant clothing" style="width:100%;height:100%;object-fit:cover;" />
       </div>
       <div class="hero-float-badge top-left">
         <span class="badge-icon">🌸</span>
@@ -966,7 +966,7 @@
       <div class="categories-grid">
         <div class="category-card cat-tops">
           <div class="category-bg">
-            <div class="category-img-placeholder">👚</div>
+            <img src="https://images.unsplash.com/photo-1594938298603-c8148c4b3ba3?w=800" alt="Tops" style="width:100%;height:100%;object-fit:cover;" />
           </div>
           <div class="category-overlay">
             <h3 class="category-name">Tops</h3>
@@ -976,7 +976,7 @@
         </div>
         <div class="category-card cat-dresses">
           <div class="category-bg">
-            <div class="category-img-placeholder">👗</div>
+            <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800" alt="Dresses" style="width:100%;height:100%;object-fit:cover;" />
           </div>
           <div class="category-overlay">
             <h3 class="category-name">Dresses</h3>
@@ -986,7 +986,7 @@
         </div>
         <div class="category-card cat-accessories">
           <div class="category-bg">
-            <div class="category-img-placeholder">👜</div>
+            <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=800" alt="Accessories" style="width:100%;height:100%;object-fit:cover;" />
           </div>
           <div class="category-overlay">
             <h3 class="category-name">Accessories</h3>
@@ -1166,8 +1166,7 @@
         name: "Bloom Linen Blouse",
         price: 68,
         oldPrice: null,
-        bg: "p-bg-1",
-        emoji: "👚",
+        image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600",
         stars: 5,
         badge: "new",
         category: "Tops"
@@ -1177,8 +1176,7 @@
         name: "Lavender Wrap Dress",
         price: 112,
         oldPrice: 148,
-        bg: "p-bg-2",
-        emoji: "👗",
+        image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600",
         stars: 5,
         badge: "sale",
         category: "Dresses"
@@ -1188,8 +1186,7 @@
         name: "Garden Midi Skirt",
         price: 84,
         oldPrice: null,
-        bg: "p-bg-3",
-        emoji: "🌿",
+        image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600",
         stars: 4,
         badge: "new",
         category: "Bottoms"
@@ -1199,8 +1196,7 @@
         name: "Sunset Silk Cami",
         price: 56,
         oldPrice: 72,
-        bg: "p-bg-4",
-        emoji: "✨",
+        image: "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=600",
         stars: 5,
         badge: "sale",
         category: "Tops"
@@ -1210,8 +1206,7 @@
         name: "Pearl Crossbody Bag",
         price: 138,
         oldPrice: null,
-        bg: "p-bg-5",
-        emoji: "👜",
+        image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600",
         stars: 5,
         badge: null,
         category: "Accessories"
@@ -1221,8 +1216,7 @@
         name: "Rosé Floral Sundress",
         price: 96,
         oldPrice: 125,
-        bg: "p-bg-6",
-        emoji: "🌸",
+        image: "https://images.unsplash.com/photo-1548549557-dbe9946621da?w=600",
         stars: 5,
         badge: "sale",
         category: "Dresses"
@@ -1245,7 +1239,7 @@
         return `
           <div class="product-card" id="card-${p.id}">
             <div class="product-img">
-              <div class="product-img-bg ${p.bg}">${p.emoji}</div>
+              <img src="${p.image}" alt="${p.name}" class="product-img-bg" style="object-fit:cover;" />
               <div class="product-badges">${badge}</div>
               <button
                 class="wishlist-btn ${wishlist.has(p.id) ? 'active' : ''}"
