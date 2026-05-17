@@ -63,7 +63,7 @@ const products = [
 ];
 
 // ── State ──
-let cartCount    = 0;
+let cartItems    = [];          // { product, qty }
 let wishlist     = new Set();
 let activeFilter = 'All';
 let searchQuery  = '';
@@ -133,21 +133,95 @@ function filterAndRender() {
   renderProducts(filtered, false);
 }
 
-// ── Add to Cart ──
+// ── Cart: open / close ──
+function toggleCart() {
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.body.style.overflow =
+    document.getElementById('cartOverlay').classList.contains('open') ? 'hidden' : '';
+}
+function closeCart(e) {
+  if (e.target === document.getElementById('cartOverlay')) toggleCart();
+}
+// keep the navbar cart icon working
+function openCart() { toggleCart(); }
+
+// ── Cart: render ──
+function renderCart() {
+  const totalQty   = cartItems.reduce((s, i) => s + i.qty, 0);
+  const totalPrice = cartItems.reduce((s, i) => s + i.product.price * i.qty, 0);
+
+  // badge
+  const badge = document.getElementById('cartCount');
+  badge.textContent = totalQty;
+  badge.style.display = totalQty ? 'flex' : 'none';
+
+  // header count chip
+  const chip = document.getElementById('cartHeaderCount');
+  chip.textContent = totalQty ? `${totalQty} item${totalQty !== 1 ? 's' : ''}` : '';
+
+  // total
+  document.getElementById('cartTotal').textContent = `$${totalPrice.toFixed(2)}`;
+
+  // items
+  const el = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+
+  if (!cartItems.length) {
+    footer.style.display = 'none';
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛍️</div>
+        <h3>Your cart is empty</h3>
+        <p>Add some pieces you love<br>and they'll appear here.</p>
+      </div>`;
+    return;
+  }
+
+  footer.style.display = '';
+  el.innerHTML = cartItems.map(({ product: p, qty }) => `
+    <div class="cart-item" id="cart-item-${p.id}">
+      <img src="${p.image}" alt="${p.name}" class="cart-item-img" />
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">$${p.price}</div>
+      </div>
+      <div class="cart-item-controls">
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty(${p.id}, -1)" aria-label="Decrease quantity">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id}, 1)" aria-label="Increase quantity">+</button>
+        </div>
+        <span class="cart-item-subtotal">$${(p.price * qty).toFixed(2)}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── Cart: add ──
 function addToCart(id, btn) {
-  cartCount++;
-  document.getElementById('cartCount').textContent = cartCount;
+  const product = products.find(p => p.id === id);
+  const existing = cartItems.find(i => i.product.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cartItems.push({ product, qty: 1 });
+  }
+  renderCart();
   btn.textContent = '✓ Added';
   btn.classList.add('added');
-  showToast(`"${products.find(p => p.id === id).name}" added to cart!`);
+  showToast(`"${product.name}" added to cart!`);
   setTimeout(() => {
     btn.textContent = 'Add to Cart';
     btn.classList.remove('added');
   }, 2000);
 }
 
-function openCart() {
-  showToast(`${cartCount} item${cartCount !== 1 ? 's' : ''} in your cart`);
+// ── Cart: quantity controls ──
+function changeQty(id, delta) {
+  const idx = cartItems.findIndex(i => i.product.id === id);
+  if (idx === -1) return;
+  cartItems[idx].qty += delta;
+  if (cartItems[idx].qty <= 0) cartItems.splice(idx, 1);
+  renderCart();
 }
 
 // ── Wishlist ──
@@ -195,6 +269,7 @@ window.addEventListener('scroll', () => {
 
 // ── Init ──
 renderProducts(products, true);
+renderCart();
 
 // ── Search & Filter event listeners ──
 document.getElementById('productSearch').addEventListener('input', e => {
