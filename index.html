@@ -822,6 +822,31 @@
     .toast-icon { color: var(--blush); font-size: 1.1rem; }
 
     /* ── Responsive ── */
+    /* ── Scroll & Load Animations ── */
+    @keyframes fadeUpIn {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-animate > * {
+      opacity: 0;
+      animation: fadeUpIn 0.7s ease forwards;
+    }
+    .hero-animate > *:nth-child(1) { animation-delay: 0.05s; }
+    .hero-animate > *:nth-child(2) { animation-delay: 0.2s;  }
+    .hero-animate > *:nth-child(3) { animation-delay: 0.35s; }
+    .hero-animate > *:nth-child(4) { animation-delay: 0.5s;  }
+    .hero-animate > *:nth-child(5) { animation-delay: 0.65s; }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     @media (max-width: 900px) {
       .nav-links { display: none; }
       .hamburger { display: flex; }
@@ -900,7 +925,7 @@
 
   <!-- Hero -->
   <section class="hero" id="hero">
-    <div class="hero-content">
+    <div class="hero-content hero-animate">
       <div class="hero-badge">New Spring Collection 2026</div>
       <h1 class="hero-title">
         Dress the Woman
@@ -964,7 +989,7 @@
         <h2 class="section-title">Explore Our Collections</h2>
       </div>
       <div class="categories-grid">
-        <div class="category-card cat-tops">
+        <div class="category-card cat-tops fade-up">
           <div class="category-bg">
             <img src="https://images.unsplash.com/photo-1562572159-4efc207f5aff?w=800" alt="Tops" style="width:100%;height:100%;object-fit:cover;" />
           </div>
@@ -974,7 +999,7 @@
             <a href="#" class="category-link">Shop Tops</a>
           </div>
         </div>
-        <div class="category-card cat-dresses">
+        <div class="category-card cat-dresses fade-up">
           <div class="category-bg">
             <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800" alt="Dresses" style="width:100%;height:100%;object-fit:cover;" />
           </div>
@@ -984,7 +1009,7 @@
             <a href="#" class="category-link">Shop Dresses</a>
           </div>
         </div>
-        <div class="category-card cat-accessories">
+        <div class="category-card cat-accessories fade-up">
           <div class="category-bg">
             <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=800" alt="Accessories" style="width:100%;height:100%;object-fit:cover;" />
           </div>
@@ -1015,7 +1040,7 @@
   <!-- Newsletter -->
   <section class="newsletter-section" id="newsletter">
     <div class="container">
-      <div class="newsletter-inner">
+      <div class="newsletter-inner fade-up">
         <span class="section-label">Stay in the Loop</span>
         <h2 class="newsletter-title">
           Get <em>Exclusive</em> Offers<br>Delivered to You
@@ -1237,7 +1262,7 @@
                       : p.badge === 'sale' ? '<span class="badge-tag badge-sale">Sale</span>'
                       : '';
         return `
-          <div class="product-card" id="card-${p.id}">
+          <div class="product-card fade-up" id="card-${p.id}">
             <div class="product-img">
               <img src="${p.image}" alt="${p.name}" class="product-img-bg" style="object-fit:cover;" />
               <div class="product-badges">${badge}</div>
@@ -1333,6 +1358,31 @@
 
     // ── Init ──
     renderProducts();
+
+    // ── Scroll Animations (Intersection Observer) ──
+    function observeFadeUps() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, _) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const delay = el.dataset.delay || 0;
+            setTimeout(() => el.classList.add('visible'), delay);
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.fade-up').forEach((el, i) => {
+        // Stagger siblings within the same parent grid
+        const siblings = el.parentElement.querySelectorAll('.fade-up');
+        if (siblings.length > 1) {
+          const idx = Array.from(siblings).indexOf(el);
+          el.dataset.delay = idx * 120;
+        }
+        observer.observe(el);
+      });
+    }
+    observeFadeUps();
   </script>
 </body>
 </html>
