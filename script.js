@@ -63,20 +63,32 @@ const products = [
 ];
 
 // ── State ──
-let cartCount = 0;
-let wishlist  = new Set();
+let cartCount    = 0;
+let wishlist     = new Set();
+let activeFilter = 'All';
+let searchQuery  = '';
 
 // ── Render Products ──
-function renderProducts() {
+function renderProducts(list, animate) {
   const grid = document.getElementById('productsGrid');
-  grid.innerHTML = products.map(p => {
-    const savings = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : null;
-    const stars   = '★'.repeat(p.stars) + '☆'.repeat(5 - p.stars);
-    const badge   = p.badge === 'new'  ? '<span class="badge-tag badge-new">New</span>'
-                  : p.badge === 'sale' ? '<span class="badge-tag badge-sale">Sale</span>'
-                  : '';
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="no-products">
+        <div class="no-products-icon">🔍</div>
+        <h3>No products found</h3>
+        <p>Try a different search term or category.</p>
+      </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const savings   = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : null;
+    const stars     = '★'.repeat(p.stars) + '☆'.repeat(5 - p.stars);
+    const badge     = p.badge === 'new'  ? '<span class="badge-tag badge-new">New</span>'
+                    : p.badge === 'sale' ? '<span class="badge-tag badge-sale">Sale</span>'
+                    : '';
+    const animClass = animate ? ' fade-up' : '';
     return `
-      <div class="product-card fade-up" id="card-${p.id}">
+      <div class="product-card${animClass}" id="card-${p.id}">
         <div class="product-img">
           <img src="${p.image}" alt="${p.name}" class="product-img-bg" style="object-fit:cover;" />
           <div class="product-badges">${badge}</div>
@@ -108,6 +120,17 @@ function renderProducts() {
         </div>
       </div>`;
   }).join('');
+}
+
+// ── Filter & Search ──
+function filterAndRender() {
+  const q = searchQuery.trim().toLowerCase();
+  const filtered = products.filter(p => {
+    const matchesCategory = activeFilter === 'All' || p.category === activeFilter;
+    const matchesSearch   = p.name.toLowerCase().includes(q);
+    return matchesCategory && matchesSearch;
+  });
+  renderProducts(filtered, false);
 }
 
 // ── Add to Cart ──
@@ -171,7 +194,22 @@ window.addEventListener('scroll', () => {
 });
 
 // ── Init ──
-renderProducts();
+renderProducts(products, true);
+
+// ── Search & Filter event listeners ──
+document.getElementById('productSearch').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  filterAndRender();
+});
+
+document.getElementById('filterBtns').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  filterAndRender();
+});
 
 // ── Scroll Animations (Intersection Observer) ──
 function observeFadeUps() {
